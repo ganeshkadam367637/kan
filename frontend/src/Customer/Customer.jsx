@@ -34,6 +34,7 @@ const Customer = () => {
         ccp: null,
         insurance: null,
       });
+      
     
       const [files, setFiles] = useState({
         aadhar: null,
