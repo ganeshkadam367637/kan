@@ -61,7 +61,7 @@ function User_management(){
                                 {data1.map((item,index)=>
                                 <tr>
                                     <td>{index+1}</td>
-                                    <td>{item.f_name}</td>
+                                    <td>{item.f_name + ' ' + item.l_name}</td>
                                     <td>{item.mobile}</td>
                                     <td>{item.employee_id}</td>
                                     <td>{item.email}</td>
@@ -70,7 +70,7 @@ function User_management(){
                                     <td>{item.start_date}</td>
                                     <td>{item.last_w_date}</td>
                                     <td>
-                                        <NavLink to='/edit-user'><button className="btn btn-info">Edit</button></NavLink>
+                                        <NavLink to={`/edit-user/${item.user_id}`}><button className="btn btn-info">Edit</button></NavLink>
                                         <button className="btn btn-danger ml-2">Delete</button>
                                     </td>
                                 </tr>

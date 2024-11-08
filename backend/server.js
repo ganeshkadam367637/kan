@@ -22,6 +22,14 @@ const db = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
 });
+const ab = pool.promise();
+db.query('YOUR SQL QUERY', [queryParams])
+  .then(([rows]) => {
+    console.log(rows);
+  })
+  .catch(error => {
+    console.error("Error updating user:", error);
+  });
 
 // Function to create tables if they don't exist
 async function createTables() {
@@ -63,53 +71,26 @@ async function createTables() {
       )
     `);
 
-    // Create financeUserDocuments table
-    await connection.query(`
+     // Create financeUserDocuments table with new status and comment columns
+     await connection.query(`
       CREATE TABLE IF NOT EXISTS financeUserDocuments (
         id INT AUTO_INCREMENT PRIMARY KEY,
         aadhar_path VARCHAR(255) NOT NULL,
         pan_path VARCHAR(255) NOT NULL,
         voterId_path VARCHAR(255) NOT NULL,
         uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending', -- New status column
+        comment TEXT DEFAULT NULL, -- New comment column
         user_id INT,
         FOREIGN KEY (user_id) REFERENCES customers(id) ON DELETE CASCADE
       )
     `);
+
     console.log('Tables created successfully or already exist.');
 
   } catch (error) {
     console.error('Error creating tables:', error);
-  } finally {
-    if (connection) connection.release(); // Ensure the connection is released back to the pool
-  }
-}
-
-
-async function updateCustomer(customerId, data) {
-  let connection;
-  try {
-    connection = await db.promise().getConnection();
-
-    const query = `
-      UPDATE customers SET 
-        name = ?, email = ?, mobile = ?, address = ?, date_birth = ?, tentative_date = ?, preferred_date = ?, request_date = ?, customer_type = ?, model = ?, variant = ?, color = ?, ex_showroom_price = ?, booking_amount = ?, rm_name = ?, srm_name = ?, exchange = ?, finance = ?, accessories = ?, coating = ?, auto_card = ?, 
-        extended_warranty = ?, registration_fees = ?, ccp = ?, insurance = ? 
-      WHERE id = ?
-    `;
-
-    const values = [
-      data.name, data.email, data.mobile, data.address, data.date_birth, data.tentative_date, data.preferred_date, data.request_date, data.customer_type, data.model, data.variant, data.color, data.ex_showroom_price, data.booking_amount, data.rm_name, data.srm_name, data.exchange, data.finance, data.accessories, data.coating, data.auto_card, data.extended_warranty,
-      data.registration_fees, data.ccp, data.insurance, customerId
-    ];
-
-    const [result] = await connection.query(query, values);
-    console.log('Customer updated:', result.affectedRows > 0 ? 'Success' : 'No rows affected');
-
-  } catch (error) {
-    console.error('Error updating customer:', error);
-  } finally {
-    if (connection) connection.release();
-  }
+  }  
 }
 
 // Check MySQL connection and create tables
@@ -199,11 +180,14 @@ app.post('/customers', upload.fields([
       const financeDocValues = [aadharPath, panPath, voterIdPath, userId];
       await connection.query(insertFinanceDocsSQL, financeDocValues);
     }
-
     res.status(201).send('Customer and finance documents added successfully.');
   } catch (error) {
     console.error('Error inserting data:', error);
     res.status(500).send('Error inserting data.');
+  }
+  finally {
+    // Ensure the connection is released after the query
+    if (connection) connection.release();
   }
 });
 
@@ -272,7 +256,11 @@ app.delete('/customers/:id', async (req, res) => {
   } catch (error) {
       console.error('Error deleting data:', error);
       res.status(500).send('Error deleting customer.');
-  }  
+  } 
+  finally {
+    // Ensure the connection is released after the query
+    if (connection) connection.release();
+  } 
 });
 
 // Fetch User Data 
@@ -321,7 +309,7 @@ app.put('/user_management/:id', async (req, res) => {
 
   try {
       const connection = await db.getConnection();
-      const [result] = await connection.query('UPDATE user_management SET ? WHERE id = ?', [userData, userId]);
+      const [result] = await connection.query('UPDATE user_management SET ? WHERE user_id = ?', [userData, userId]);
 
       if (result.affectedRows === 0) {
           return res.status(404).send('User not found.');
@@ -357,6 +345,10 @@ app.get('/customers/:id', async (req, res) => {
   } catch (error) {
     console.error('Error fetching customer:', error);
     res.status(500).send('Error fetching customer data.');
+  }
+  finally {
+    // Ensure the connection is released after the query
+    if (connection) connection.release();
   }
 });
 
@@ -431,9 +423,42 @@ app.put('/customers/:id', upload.fields([
       console.error('Error updating data:', error);
       res.status(500).send('Error updating data.');
   } finally {
-      connection.release();
+    // Ensure the connection is released after the query
+    if (connection) connection.release();
   }
 });
+
+app.put('/financeUserDocuments/status/:docId', async (req, res) => {
+  const docId = req.params.docId;
+  const { status, comment } = req.body;
+
+  if (!status || !['Approved', 'Rejected'].includes(status)) {
+      return res.status(400).send('Status must be either "Approved" or "Rejected".');
+  }
+
+  let connection;
+  try {
+      connection = await db.promise().getConnection();
+
+      const [result] = await connection.query(`
+          UPDATE financeUserDocuments
+          SET status = ?, comment = ?
+          WHERE id = ?
+      `, [status, comment, docId]);
+
+      if (result.affectedRows === 0) {
+          return res.status(404).send('Document not found');
+      }
+
+      res.status(200).send('Document status updated successfully');
+  } catch (error) {
+      console.error('Error updating document status:', error);
+      res.status(500).send('Error updating document status');
+  } finally {
+      if (connection) connection.release();
+  }
+});
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.listen(PORT, () => {

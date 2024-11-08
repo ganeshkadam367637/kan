@@ -107,7 +107,7 @@ function Navbar() {
                      <Route path="/" element={<Dashboard />} />
                      <Route path="/status" element={<Status />} />
                      <Route path="/add-user" element={<Add_new_user />} />
-                     <Route path="/edit-user" element={<Edit_user />} />
+                     <Route path="/edit-user/:id" element={<Edit_user />} />
                      <Route path="/customer" element={<Customer />} />
                      <Route path="/customer_list" element={<Customer_list />} />
                      <Route path="/update_customer/:id" element={<Update_customer />}/>

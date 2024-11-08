@@ -107,6 +107,42 @@ function Dashboard(){
                           </div>
                         </div>
                       </div>
+                      <div class="col-md-6 col-lg-4">
+                        <div class="full socile_icons fb margin_bottom_30">
+                          <div class="social_icon bg-success">
+                            <h1 className="text-white">Fast Tag</h1>
+                            <p className="text-white">Not Initiated</p>
+                          </div>
+                          <div class="social_cont">
+                              <h4 style={{fontSize:"30px"}} className="text-success">06</h4>
+                              <h5 className="text-success">Pending</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6 col-lg-4">
+                        <div class="full socile_icons fb margin_bottom_30">
+                          <div class="social_icon bg-info">
+                            <h1 className="text-white">True Value</h1>
+                            <p className="text-white">Not Initiated</p>
+                          </div>
+                          <div class="social_cont">
+                              <h4 style={{fontSize:"30px"}} className="text-info">16</h4>
+                              <h5 className="text-info">Pending</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6 col-lg-4">
+                        <div class="full socile_icons fb margin_bottom_30">
+                          <div class="social_icon bg-secondary">
+                            <h1 className="text-white">Security / Clearance</h1>
+                            <p className="text-white">Not Initiated</p>
+                          </div>
+                          <div class="social_cont">
+                              <h4 style={{fontSize:"30px"}} className="text-secondary">02</h4>
+                              <h5 className="text-secondary">Pending</h5>
+                          </div>
+                        </div>
+                      </div>
                   </div>
                 </div>
               </div>

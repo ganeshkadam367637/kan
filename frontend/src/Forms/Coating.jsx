@@ -92,7 +92,7 @@ function Coating(){
 {/* Bootstrap Modal */}
 {show && (
     <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-        <div className="modal-dialog" role="document" style={{ maxWidth: '500px', width: '80%', height: '300px' }}>
+        <div className="modal-dialog" role="document" style={{ maxWidth: '600px', width: '80%', height: '400px' }}>
             <div className="modal-content" style={{ height: '100%' }}>
                 <div className="modal-header">
                     <h4 className="modal-title">Ram Sharma</h4>
@@ -104,13 +104,34 @@ function Coating(){
                     {/* <p>{selectedStatus}</p> */}
                     {/* You can add more detailed content here */}
                     <p>Conform The Your Response</p>
-                    <button className="btn btn-outline-success ml-2">Approve</button>
-                    <button className="btn btn-outline-danger ml-2" onClick={handleRejectClick}>Reject</button>
+                    <button className="btn btn-outline-success ml-3 mt-2">Approve</button>
+                    <button className="btn btn-outline-danger ml-3 mt-2" onClick={handleRejectClick}>Reject</button>
                     {showInput && (
                         <div className="mt-2">
                             <textarea type="text" id="reasonInput" className="form-control" value={reason} onChange={handleInputChange} placeholder="Describe the reason" required></textarea>
                         </div>
                     )}
+                    <h6 className="mt-5">Forword To The</h6>
+                    <div className="row mt-2">
+                        <div className="col-md-8">
+                            <select type="text" name="model" class="form-control" required>
+                                <option>Select...</option>
+                                <option>Accessories Manager</option>
+                                <option>Account Manager</option>
+                                <option>Cashier</option>
+                                <option>Finance Manager</option>
+                                <option>PDI Manager</option>
+                                <option>RTO Manager</option>
+                                <option>Coating Manager</option>
+                                <option>Fast Tag</option>
+                                <option>True Value Manager</option>
+                                <option>Security / Clearance Manager</option>
+                            </select>
+                        </div>
+                        <div className="col-md-4">
+                            <button type="button" className="btn btn-outline-info">Forword...</button>
+                        </div>
+                    </div>
                 </div>
                 <div className="modal-footer">
                     <button type="button" className="btn btn-secondary" onClick={handleClose} style={{ backgroundColor: 'rgb(33, 65, 98)' }}>
